@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+import RegistrationForm from "./components/RegistrationForm/RegistrationForm";
+import { Container, Typography } from "@material-ui/core";
+import "fontsource-roboto";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="sm" component="article">
+      <Typography variant="h3" component="h1" align="center">
+        Formulário de cadastro
+      </Typography>
+
+      <RegistrationForm onSubmit={onSubmitForm} validateCPF={validateCPF} />
+    </Container>
   );
 }
+
+const onSubmitForm = (data) => console.log(data); // Utilizei console.log apenas para simplificar o projeto
+const validateCPF = (cpf) => {
+  if (cpf.length !== 11) {
+    return { isValid: true, textCPF: "CPF deve conter 11 números." };
+  } else return { isValid: false, textCPF: "" };
+};
 
 export default App;
