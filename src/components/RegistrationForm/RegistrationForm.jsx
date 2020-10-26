@@ -1,95 +1,46 @@
-import React, { useState } from "react";
-import { Button, Switch, TextField, FormControlLabel } from "@material-ui/core";
+import React, { useState, useEffect } from "react";
+import PersonalData from "./PersonalData";
+import UserData from "./UserData";
+import DeliveryData from "./DeliveryData";
+import { Stepper, Step, StepLabel, Typography } from "@material-ui/core";
 
-function RegistrationForm({ onSubmit, validateCPF }) {
-  const [name, setName] = useState(""); // guarda informações de um componente, usar um estado e ele ser gerenciado pelo react internamente
-  const [lastName, setLastName] = useState("");
-  const [cpf, setCPF] = useState("");
-  const [promotions, setPromotions] = useState(true);
-  const [news, setNews] = useState(true);
-  const [errors, setErrors] = useState({
-    errorCPF: { isValid: false, textCPF: "" },
-  });
+function RegistrationForm({ onSubmit }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [collectedData, setCollectedData] = useState({});
+
+  const collectData = (data) => {
+    setCollectedData({ ...collectedData, ...data });
+    nextStep();
+  };
+
+  const nextStep = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
+  useEffect(() => {
+    // sempre que um estado for atualizado, removido ou adicionado, o useEffect é responsável por gerenciar isso a cada vez que o componente for executado
+    if (currentStep === form.length - 1) {
+      onSubmit(collectedData);
+    }
+  }); // quando algo acontece com teus componentes, useEffect é chamado
+
+  const form = [
+    <UserData onSubmit={collectData} />,
+    <PersonalData onSubmit={collectData} />,
+    <DeliveryData onSubmit={collectData} />,
+    <Typography variant="h5">Cadastro efetuado com sucesso!</Typography>,
+  ];
 
   return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        onSubmit({ name, lastName, cpf, promotions, news });
-      }}
-    >
-      <TextField
-        value={name}
-        onChange={(event) => {
-          setName(event.target.value); // Atribuindo ao estado o valor do input
-        }}
-        id="name"
-        label="Nome"
-        variant="outlined"
-        fullWidth={true}
-        margin="normal"
-      />
-      <TextField
-        value={lastName}
-        onChange={(event) => {
-          setLastName(event.target.value); // pega o evento de onchange e atribui ao estado de lastName
-        }}
-        id="last-name"
-        label="Sobrenome"
-        variant="outlined"
-        fullWidth={true}
-        margin="normal"
-      />
-      <TextField
-        value={cpf}
-        onChange={(event) => {
-          setCPF(event.target.value);
-        }}
-        onBlur={(event) => {
-          const values = validateCPF(event.target.value);
-          setErrors({ errorCPF: values });
-        }}
-        helperText={errors.errorCPF.textCPF}
-        error={errors.errorCPF.isValid}
-        id="cpf"
-        label="CPF"
-        variant="outlined"
-        fullWidth={true}
-        margin="normal"
-      />
-
-      <FormControlLabel
-        control={
-          <Switch
-            checked={promotions}
-            onChange={(event) => {
-              setPromotions(event.target.checked);
-            }}
-            name="Promoções"
-            color="primary"
-          />
-        }
-        label="Promoções"
-      />
-      <FormControlLabel
-        control={
-          <Switch
-            checked={news}
-            onChange={(event) => {
-              setNews(event.target.checked);
-            }}
-            name="Novidades"
-            color="primary"
-          />
-        }
-        label="Novidades"
-      />
-
-      <Button type="submit" variant="contained" color="primary">
-        Cadastrar
-      </Button>
-    </form>
+    <>
+      <Stepper activeStep={currentStep}>
+        <Step><StepLabel>Login</StepLabel></Step>
+        <Step><StepLabel>Dados pessoais</StepLabel></Step>
+        <Step><StepLabel>Entrega</StepLabel></Step>
+        <Step><StepLabel>Finalização</StepLabel></Step>
+      </Stepper>
+      {form[currentStep]}
+    </>
   );
 }
-
 export default RegistrationForm;
